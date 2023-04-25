@@ -3,11 +3,12 @@
 
 uint64_t l2pf_access = 0;
 
+/// @brief A callback function to handle cache fill logistics (the actual data handling done by fill_cache)
 void CACHE::handle_fill()
 {
   // handle fill
   uint32_t fill_cpu = (MSHR.next_fill_index == MSHR_SIZE) ? NUM_CPUS : MSHR.entry[MSHR.next_fill_index].cpu;
-  if (fill_cpu == NUM_CPUS)
+  if (fill_cpu == NUM_CPUS) // prolly means that the CPU itself should handle the fill, not the simulator
     return;
 
   if (MSHR.next_fill_cycle <= current_core_cycle[fill_cpu])
@@ -20,7 +21,7 @@ void CACHE::handle_fill()
 
     uint32_t mshr_index = MSHR.next_fill_index;
 
-    // find victim
+    // find victim to be replaced by this new cache line
     uint32_t set = get_set(MSHR.entry[mshr_index].address), way;
     if (cache_type == IS_LLC)
     {
@@ -31,12 +32,10 @@ void CACHE::handle_fill()
 
 // this is used to bypass the filling of the incoming cache line to the LLC.
 #ifdef LLC_BYPASS
-// q : what is the function of thsi code block?
-// a : this code block is to bypass the LLC
     if ((cache_type == IS_LLC) && (way == LLC_WAY))
     { // this is a bypass that does not fill the LLC
 
-      // update replacement policy
+      // update replacement policy (update the parameters used by the replacement policy for the replacement logic)
       if (cache_type == IS_LLC)
       {
         llc_update_replacement_state(fill_cpu, set, way, MSHR.entry[mshr_index].full_addr, MSHR.entry[mshr_index].ip, 0, MSHR.entry[mshr_index].type, 0);
@@ -245,6 +244,7 @@ void CACHE::handle_fill()
   }
 }
 
+/// @brief Handles writeback requests. Called when cache line needs to be evicted from the current cache level and written back to a lower level cache.
 void CACHE::handle_writeback()
 {
   // handle write
@@ -563,6 +563,7 @@ void CACHE::handle_writeback()
   }
 }
 
+/// @brief Handle a read request from the processor. Checks for the requested data, returns if found. If not, adds a request to the read request queue.
 void CACHE::handle_read()
 {
   // handle read
@@ -893,6 +894,7 @@ void CACHE::handle_read()
   }
 }
 
+/// @brief Responsible for handling a prefetch request from the processor. Checks if the prefetched data is already present in the cache. If not, adds a memory request for the data to the request queue.
 void CACHE::handle_prefetch()
 {
   // handle prefetch
@@ -1128,6 +1130,7 @@ void CACHE::handle_prefetch()
   }
 }
 
+/// @brief A general function that handles a cache operation
 void CACHE::operate()
 {
   handle_fill();
@@ -1155,6 +1158,10 @@ uint32_t CACHE::get_way(uint64_t address, uint32_t set)
   return NUM_WAY;
 }
 
+/// @brief Given a location and data, puts the data into the location
+/// @param set The set to fill in
+/// @param way The way to fill in
+/// @param packet The packet containing information to be loaded
 void CACHE::fill_cache(uint32_t set, uint32_t way, PACKET *packet)
 {
 #ifdef SANITY_CHECK
@@ -1207,6 +1214,9 @@ void CACHE::fill_cache(uint32_t set, uint32_t way, PACKET *packet)
     cout << " data: " << block[set][way].data << dec << endl; });
 }
 
+/// @brief Checks for a hit in the cache
+/// @param packet The packet to be checked for a hit
+/// @return -1 if there is a miss, otherwise the way of the hit
 int CACHE::check_hit(PACKET *packet)
 {
   uint32_t set = get_set(packet->address);
@@ -1241,6 +1251,9 @@ int CACHE::check_hit(PACKET *packet)
   return match_way;
 }
 
+/// @brief Invalidates a cache entry, adhering to the respective coherence protocol
+/// @param inval_addr The address to invalidate
+/// @return !!DON'T-KNOW
 int CACHE::invalidate_entry(uint64_t inval_addr)
 {
   uint32_t set = get_set(inval_addr);
@@ -1275,6 +1288,9 @@ int CACHE::invalidate_entry(uint64_t inval_addr)
   return match_way;
 }
 
+/// @brief Add memory read request pending in the request queue
+/// @param packet The packet containing information to add
+/// @return !!DON'T-KNOW
 int CACHE::add_rq(PACKET *packet)
 {
   // check for the latest wirtebacks in the write queue
@@ -1440,6 +1456,9 @@ int CACHE::add_rq(PACKET *packet)
   return -1;
 }
 
+/// @brief Add memory writeback request pending in the request queue
+/// @param packet The packet containing information to add
+/// @return !!DON'T-KNOW
 int CACHE::add_wq(PACKET *packet)
 {
   // check for duplicates in the write queue
@@ -1493,6 +1512,13 @@ int CACHE::add_wq(PACKET *packet)
   return -1;
 }
 
+/// @brief Generates and issues a prefetch request, typically called when a cache miss occurs
+/// @param ip 
+/// @param base_addr 
+/// @param pf_addr 
+/// @param pf_fill_level Level of the cache to be filled (?isn't a class defined for a single level of a cache)
+/// @param prefetch_metadata 
+/// @return 
 int CACHE::prefetch_line(uint64_t ip, uint64_t base_addr, uint64_t pf_addr, int pf_fill_level, uint32_t prefetch_metadata)
 {
   pf_requested++;
