@@ -7,7 +7,7 @@ uint32_t DRAM_MTPS, DRAM_DBUS_RETURN_TIME,
 
 //*************************INCLUSIVE******************************************
         
-u_int64_t*  MEMORY_CONTROLLER::remove_from_upper(PACKET* rem_pack){return nullptr;};
+PACKET*  MEMORY_CONTROLLER::remove_from_upper(PACKET* rem_pack){return nullptr;};
 //*************************INCLUSIVE******************************************
 
 void MEMORY_CONTROLLER::reset_remain_requests(PACKET_QUEUE *queue, uint32_t channel)

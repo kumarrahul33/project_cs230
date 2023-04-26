@@ -12,7 +12,7 @@ uint64_t l2pf_access = 0;
 
 // ************************************************************INCLUSIVE********************************************
 
-uint64_t *CACHE::remove_from_upper(PACKET *rem_pack)
+PACKET *CACHE::remove_from_upper(PACKET *rem_pack)
 {
     uint32_t set = get_set(rem_pack->address);
     int way = check_hit(rem_pack);
@@ -24,22 +24,26 @@ uint64_t *CACHE::remove_from_upper(PACKET *rem_pack)
     if (upper_level_dcache[rem_pack->cpu] && upper_level_icache[rem_pack->cpu])
     {
         rem_pack->fill_level = rem_pack->fill_level >> 1;
-        uint64_t *is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
+        PACKET *is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
         if(is_dirty)
         {
-            block[set][way].data = *is_dirty;
+            rem_pack = is_dirty;
+            block[set][way].data = is_dirty->data;
+            block[set][way].dirty = 1;
         }
     }
 
     
     if (block[set][way].dirty == 1)
     {
-        block[set][way].valid = 0;
-        return &((block[set][way].data));
+        invalidate_entry(rem_pack->address);
+        // block[set][way].valid = 0;
+        return rem_pack;
     }
     else
     {
-        block[set][way].valid = 0;
+        invalidate_entry(rem_pack->address);
+        // block[set][way].valid = 0;
         return nullptr;
     }
 }
@@ -148,16 +152,16 @@ void CACHE::handle_fill()
             rem_pack.type = WRITEBACK;
             rem_pack.event_cycle = current_core_cycle[fill_cpu];
 
-            uint64_t *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack);
+            PACKET *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack);
             if (is_dirty)
             {
-                block[set][way].data = *is_dirty;
+                block[set][way].data = is_dirty->data;
                 block[set][way].dirty = 1;
             }
             is_dirty = upper_level_icache[fill_cpu]->remove_from_upper(&rem_pack);
             if (is_dirty)
             {
-                block[set][way].data = *is_dirty;
+                block[set][way].data = is_dirty->data;
                 block[set][way].dirty = 1;
             }
         }

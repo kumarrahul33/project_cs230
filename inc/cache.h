@@ -187,7 +187,7 @@ class CACHE : public MEMORY {
 
 //*************************INCLUSIVE******************************************
         
-    uint64_t* remove_from_upper(PACKET* rem_pack);
+    PACKET* remove_from_upper(PACKET* rem_pack);
 //*************************INCLUSIVE******************************************
     void handle_fill(),
          handle_writeback(),
