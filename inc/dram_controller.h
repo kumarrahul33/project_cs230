@@ -102,6 +102,11 @@ class MEMORY_CONTROLLER : public MEMORY {
 
     uint64_t get_bank_earliest_cycle();
 
+    //*************************INCLUSIVE******************************************
+        
+    u_int64_t* remove_from_upper(PACKET* rem_pack);
+    //*************************INCLUSIVE******************************************
+
     int check_dram_queue(PACKET_QUEUE *queue, PACKET *packet);
 };
 

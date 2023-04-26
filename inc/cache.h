@@ -183,6 +183,10 @@ class CACHE : public MEMORY {
          prefetch_line(uint64_t ip, uint64_t base_addr, uint64_t pf_addr, int prefetch_fill_level, uint32_t prefetch_metadata),
          kpc_prefetch_line(uint64_t base_addr, uint64_t pf_addr, int prefetch_fill_level, int delta, int depth, int signature, int confidence, uint32_t prefetch_metadata);
 
+//*************************INCLUSIVE******************************************
+        
+    u_int64_t* remove_from_upper(PACKET* rem_pack);
+//*************************INCLUSIVE******************************************
     void handle_fill(),
          handle_writeback(),
          handle_read(),
@@ -194,7 +198,7 @@ class CACHE : public MEMORY {
          update_replacement_state(uint32_t cpu, uint32_t set, uint32_t way, uint64_t full_addr, uint64_t ip, uint64_t victim_addr, uint32_t type, uint8_t hit),
          llc_update_replacement_state(uint32_t cpu, uint32_t set, uint32_t way, uint64_t full_addr, uint64_t ip, uint64_t victim_addr, uint32_t type, uint8_t hit),
          lru_update(uint32_t set, uint32_t way),
-         fill_cache(uint32_t set, uint32_t way, PACKET *packet),
+         fill_cache(uint32_t set, uint32_t way, PACKET *packet),         
          replacement_final_stats(),
          llc_replacement_final_stats(),
          //prefetcher_initialize(),
