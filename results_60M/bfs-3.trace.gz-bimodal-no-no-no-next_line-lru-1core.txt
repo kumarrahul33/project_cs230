@@ -1,0 +1,23 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 30000000
+Simulation Instructions: 60000000
+Number of CPUs: 1
+LLC sets: 2048
+LLC ways: 16
+Off-chip DRAM Size: 4096 MB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+
+CPU 0 runs /home/rahulkumar/coding/code/iitb_cs/cs232_comp_architecture/project/ChampSim/dpc3_traces/bfs-3.trace.gz
+CPU 0 Bimodal branch predictor
+LLC Next Line Prefetcher
+Heartbeat CPU 0 instructions: 10000002 cycles: 2954808 heartbeat IPC: 3.38432 cumulative IPC: 3.38432 (Simulation time: 0 hr 0 min 5 sec) 
+Heartbeat CPU 0 instructions: 20000002 cycles: 6311001 heartbeat IPC: 2.97957 cumulative IPC: 3.16907 (Simulation time: 0 hr 0 min 17 sec) 
+Heartbeat CPU 0 instructions: 30000002 cycles: 9670309 heartbeat IPC: 2.9768 cumulative IPC: 3.10228 (Simulation time: 0 hr 0 min 29 sec) 
+
+Warmup complete CPU 0 instructions: 30000002 cycles: 9670309 (Simulation time: 0 hr 0 min 29 sec) 
+
+Heartbeat CPU 0 instructions: 40000000 cycles: 38956566 heartbeat IPC: 0.341457 cumulative IPC: 0.341457 (Simulation time: 0 hr 0 min 38 sec) 
+Heartbeat CPU 0 instructions: 50000000 cycles: 74418976 heartbeat IPC: 0.281989 cumulative IPC: 0.308887 (Simulation time: 0 hr 0 min 49 sec) 
+Heartbeat CPU 0 instructions: 60000000 cycles: 114025456 heartbeat IPC: 0.252484 cumulative IPC: 0.28748 (Simulation time: 0 hr 1 min 1 sec) 
+Heartbeat CPU 0 instructions: 70000002 cycles: 137478494 heartbeat IPC: 0.426384 cumulative IPC: 0.312969 (Simulation time: 0 hr 1 min 9 sec) 

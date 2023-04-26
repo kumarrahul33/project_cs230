@@ -61,7 +61,7 @@ def set_sets(set_l1, set_l2, set_llc):
 
 def run_tests_for_ways():
     # to_test = [4,16,64,128]
-    to_test = [0.5, 1, 4, 8]
+    to_test = [0.5,2, 1, 4, 8]
     trace_files = ["bfs-3.trace.gz", "cc-5.trace.gz", "sssp-5.trace.gz"]
     # trace_files = ["bfs-3.trace.gz", "cc-5.trace.gz"]
 
