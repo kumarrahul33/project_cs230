@@ -43,6 +43,7 @@ PACKET *CACHE::remove_from_upper(PACKET *rem_pack, int up_lvl, uint32_t fill_cpu
     }
     else
     {
+        // uint32_t mshr_ind = MSHR.next_fill_index;
         PACKET writeback_packet;
 
         writeback_packet.fill_level = fill_level << 1;
@@ -50,7 +51,7 @@ PACKET *CACHE::remove_from_upper(PACKET *rem_pack, int up_lvl, uint32_t fill_cpu
         writeback_packet.address = block[set][way].address;
         writeback_packet.full_addr = block[set][way].full_addr;
         writeback_packet.data = block[set][way].data;
-        writeback_packet.instr_id = MSHR.entry[mshr_index].instr_id;
+        writeback_packet.instr_id = rem_pack->instr_id;
         writeback_packet.ip = 0; // writeback does not have ip
         writeback_packet.type = WRITEBACK;
         writeback_packet.event_cycle = current_core_cycle[fill_cpu];
