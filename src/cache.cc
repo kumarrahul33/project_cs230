@@ -31,6 +31,14 @@ PACKET *CACHE::remove_from_upper(PACKET *rem_pack)
             block[set][way].data = is_dirty->data;
             block[set][way].dirty = 1;
         }
+        is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
+        if(is_dirty)
+        {
+            rem_pack = is_dirty;
+            block[set][way].data = is_dirty->data;
+            block[set][way].dirty = 1;
+        }
+        rem_pack->fill_level = rem_pack->fill_level << 1;
     }
 
     
@@ -156,12 +164,18 @@ void CACHE::handle_fill()
             if (is_dirty)
             {
                 block[set][way].data = is_dirty->data;
+                block[set][way].address = is_dirty->address;
+                block[set][way].full_addr = is_dirty->full_addr;
+                MSHR.entry[mshr_index].instr_id = is_dirty->instr_id;
                 block[set][way].dirty = 1;
             }
             is_dirty = upper_level_icache[fill_cpu]->remove_from_upper(&rem_pack);
             if (is_dirty)
             {
                 block[set][way].data = is_dirty->data;
+                block[set][way].address = is_dirty->address;
+                block[set][way].full_addr = is_dirty->full_addr;
+                MSHR.entry[mshr_index].instr_id = is_dirty->instr_id;
                 block[set][way].dirty = 1;
             }
         }
