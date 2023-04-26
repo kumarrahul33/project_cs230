@@ -12,7 +12,7 @@ uint64_t l2pf_access = 0;
 
 // ************************************************************INCLUSIVE********************************************
 
-PACKET *CACHE::remove_from_upper(PACKET *rem_pack)
+PACKET *CACHE::remove_from_upper(PACKET *rem_pack, int up_lvl, uint32_t fill_cpu, uint32_t mshr_index)
 {
     uint32_t set = get_set(rem_pack->address);
     int way = check_hit(rem_pack);
@@ -21,37 +21,59 @@ PACKET *CACHE::remove_from_upper(PACKET *rem_pack)
         return nullptr;
     }
 
-    if (upper_level_dcache[rem_pack->cpu] && upper_level_icache[rem_pack->cpu])
+    if (upper_level_dcache[rem_pack->cpu] && upper_level_icache[rem_pack->cpu] && block[set][way].valid!=0)
     {
         rem_pack->fill_level = rem_pack->fill_level >> 1;
-        PACKET *is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
+        PACKET *is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack, up_lvl + 1, fill_cpu, mshr_index);
         if(is_dirty)
         {
-            rem_pack = is_dirty;
+
             block[set][way].data = is_dirty->data;
             block[set][way].dirty = 1;
+            rem_pack = is_dirty;
         }
-        is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
+        is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack, up_lvl + 1, fill_cpu, mshr_index);
         if(is_dirty)
         {
-            rem_pack = is_dirty;
             block[set][way].data = is_dirty->data;
             block[set][way].dirty = 1;
+            rem_pack = is_dirty;
         }
         rem_pack->fill_level = rem_pack->fill_level << 1;
     }
+    else
+    {
+        PACKET writeback_packet;
 
+        writeback_packet.fill_level = fill_level << 1;
+        writeback_packet.cpu = fill_cpu;
+        writeback_packet.address = block[set][way].address;
+        writeback_packet.full_addr = block[set][way].full_addr;
+        writeback_packet.data = block[set][way].data;
+        writeback_packet.instr_id = MSHR.entry[mshr_index].instr_id;
+        writeback_packet.ip = 0; // writeback does not have ip
+        writeback_packet.type = WRITEBACK;
+        writeback_packet.event_cycle = current_core_cycle[fill_cpu];
+        if(up_lvl == 0)
+            lower_level->lower_level->add_wq(&writeback_packet);
+        else if(up_lvl == 1)
+            lower_level->lower_level->lower_level->add_wq(&writeback_packet);
+
+        
+    }
     
     if (block[set][way].dirty == 1)
     {
         invalidate_entry(rem_pack->address);
         // block[set][way].valid = 0;
+        block[set][way].dirty = 0;
         return rem_pack;
     }
     else
     {
         invalidate_entry(rem_pack->address);
         // block[set][way].valid = 0;
+        block[set][way].dirty = 0;
         return nullptr;
     }
 }
@@ -160,7 +182,7 @@ void CACHE::handle_fill()
         // ************************************************************INCLUSIVE********************************************
 
         #ifdef CT_INCLUSIVE
-        if (upper_level_dcache[fill_cpu] && upper_level_icache[fill_cpu])
+        if (upper_level_dcache[fill_cpu] && upper_level_icache[fill_cpu] && block[set][way].valid != 0)
         {
 
             PACKET rem_pack;
@@ -175,7 +197,8 @@ void CACHE::handle_fill()
             rem_pack.type = WRITEBACK;
             rem_pack.event_cycle = current_core_cycle[fill_cpu];
 
-            PACKET *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack);
+            PACKET *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack, 0, fill_cpu, mshr_index);
+            /*
             if (is_dirty)
             {
                 block[set][way].data = is_dirty->data;
@@ -184,7 +207,10 @@ void CACHE::handle_fill()
                 MSHR.entry[mshr_index].instr_id = is_dirty->instr_id;
                 block[set][way].dirty = 1;
             }
-            is_dirty = upper_level_icache[fill_cpu]->remove_from_upper(&rem_pack);
+            */
+            if(fill_level != FILL_LLC)
+                is_dirty = upper_level_icache[fill_cpu]->remove_from_upper(&rem_pack, 0, fill_cpu, mshr_index);
+            /*
             if (is_dirty)
             {
                 block[set][way].data = is_dirty->data;
@@ -193,6 +219,7 @@ void CACHE::handle_fill()
                 MSHR.entry[mshr_index].instr_id = is_dirty->instr_id;
                 block[set][way].dirty = 1;
             }
+            */
         }
 
         #endif
