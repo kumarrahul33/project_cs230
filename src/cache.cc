@@ -1,6 +1,11 @@
 #include "cache.h"
 #include "set.h"
 
+// Additional configuration directives
+// #define CT_INCLUSIVE
+// #define CT_EXCLUSIVE
+#define CT_NONINCLUSIVE
+
 uint64_t l2pf_access = 0;
 
 /// @brief A callback function to handle cache fill logistics (the actual data handling done by fill_cache)
@@ -30,7 +35,7 @@ void CACHE::handle_fill()
     else
       way = find_victim(fill_cpu, MSHR.entry[mshr_index].instr_id, set, block[set], MSHR.entry[mshr_index].ip, MSHR.entry[mshr_index].full_addr, MSHR.entry[mshr_index].type);
 
-// this is used to bypass the filling of the incoming cache line to the LLC.
+// this is used to bypass the filling of the incoming cache line to the LLC. If the cache is not likely to be used very often or is very large, LLC bypass is beneficial
 #ifdef LLC_BYPASS
     if ((cache_type == IS_LLC) && (way == LLC_WAY))
     { // this is a bypass that does not fill the LLC
@@ -317,6 +322,10 @@ void CACHE::handle_writeback()
     }
     else
     { // writeback miss (or RFO miss for L1D)
+
+#ifdef CT_INCLUSIVE
+    assert(0);
+#endif
 
       DP(if (warmup_complete[writeback_cpu]) {
             cout << "[" << NAME << "] " << __func__ << " type: " << +WQ.entry[index].type << " miss";

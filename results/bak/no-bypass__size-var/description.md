@@ -1,0 +1,3 @@
+- folders are named as `<cache_level>_<size_multiplier>` where `size_multiplier` is the number by which the size of the respective `<cache_level>` size has been modified
+- LLC Bypass was deactivated
+- Everything else was the same as the default
