@@ -1,5 +1,6 @@
-<h1 align="center" style="border-bottom:none;">CS230 Project</h1>
-<h3 align="right">~ Team <b>CST</b></h3>
+<h1 align="center" style="border-bottom:none;">Memory/Cache Hierarchy Optimizations for Graph Analytics</h1>
+<h3 align="right">By Team <b>CST</b></h3>
+<br>
 
 # Members - CST
 - Dheer Banker (210070028)
