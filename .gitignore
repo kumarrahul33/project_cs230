@@ -12,3 +12,4 @@ obj/
 dpc3_traces/
 
 *.ipynb
+*.png
