@@ -105,23 +105,38 @@ void CACHE::handle_fill()
             if (MSHR.entry[mshr_index].fill_level < fill_level)
             {
 
+                bool data_returned=false;
                 if (fill_level == FILL_L2)
                 {
+                    data_returned=false;
                     if (MSHR.entry[mshr_index].fill_l1i)
                     {
                         upper_level_icache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
+                        data_returned=true;
                     }
                     if (MSHR.entry[mshr_index].fill_l1d)
                     {
                         upper_level_dcache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
+                        data_returned=true;
                     }
+#ifdef CT_EXCLUSIVE
+                    if(data_returned) invalidate_entry(MSHR.entry[mshr_index].address);
+#endif
                 }
                 else
                 {
-                    if (MSHR.entry[mshr_index].instruction)
+                    data_returned=false;
+                    if (MSHR.entry[mshr_index].instruction){
+                        data_returned=true;
                         upper_level_icache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
-                    if (MSHR.entry[mshr_index].is_data)
+                    }
+                    if (MSHR.entry[mshr_index].is_data){
+                        data_returned=true;
                         upper_level_dcache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
+                    }
+#ifdef CT_EXCLUSIVE
+                    if(data_returned && fill_level == FILL_LLC) invalidate_entry(MSHR.entry[mshr_index].address);
+#endif
                 }
             }
 
@@ -275,23 +290,38 @@ void CACHE::handle_fill()
             if (MSHR.entry[mshr_index].fill_level < fill_level)
             {
 
+                bool data_returned=false;
                 if (fill_level == FILL_L2)
                 {
+                    data_returned=false;
                     if (MSHR.entry[mshr_index].fill_l1i)
                     {
                         upper_level_icache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
+                        data_returned=true;
                     }
                     if (MSHR.entry[mshr_index].fill_l1d)
                     {
                         upper_level_dcache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
+                        data_returned=true;
                     }
+#ifdef CT_EXCLUSIVE
+                    if(data_returned) invalidate_entry(MSHR.entry[mshr_index].address);
+#endif
                 }
                 else
                 {
-                    if (MSHR.entry[mshr_index].instruction)
+                    data_returned=false;
+                    if (MSHR.entry[mshr_index].instruction){
                         upper_level_icache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
-                    if (MSHR.entry[mshr_index].is_data)
+                        data_returned=true;
+                    }
+                    if (MSHR.entry[mshr_index].is_data){
                         upper_level_dcache[fill_cpu]->return_data(&MSHR.entry[mshr_index]);
+                        data_returned=true;
+                    }
+#ifdef CT_EXCLUSIVE
+                    if(data_returned && fill_level==FILL_LLC) invalidate_entry(MSHR.entry[mshr_index].address);
+#endif
                 }
             }
 
@@ -385,23 +415,38 @@ void CACHE::handle_writeback()
             if (WQ.entry[index].fill_level < fill_level)
             {
 
+                bool data_returned = false;
                 if (fill_level == FILL_L2)
                 {
+                    data_returned=false;
                     if (WQ.entry[index].fill_l1i)
                     {
                         upper_level_icache[writeback_cpu]->return_data(&WQ.entry[index]);
+                        data_returned = true;
                     }
                     if (WQ.entry[index].fill_l1d)
                     {
                         upper_level_dcache[writeback_cpu]->return_data(&WQ.entry[index]);
+                        data_returned = true;
                     }
+#ifdef CT_EXCLUSIVE
+                    if(data_returned) invalidate_entry(WQ.entry[index].address);
+#endif
                 }
                 else
                 {
-                    if (WQ.entry[index].instruction)
+                    data_returned=false;
+                    if (WQ.entry[index].instruction){
                         upper_level_icache[writeback_cpu]->return_data(&WQ.entry[index]);
-                    if (WQ.entry[index].is_data)
+                        data_returned = true;
+                    }
+                    if (WQ.entry[index].is_data){
                         upper_level_dcache[writeback_cpu]->return_data(&WQ.entry[index]);
+                        data_returned = true;
+                    }
+#ifdef CT_EXCLUSIVE
+                    if(data_returned && fill_level==FILL_LLC) invalidate_entry(WQ.entry[index].address);
+#endif
                 }
             }
 
@@ -632,23 +677,37 @@ void CACHE::handle_writeback()
                     if (WQ.entry[index].fill_level < fill_level)
                     {
 
+                        bool data_returned=false;
                         if (fill_level == FILL_L2)
                         {
+                            data_returned=false;
                             if (WQ.entry[index].fill_l1i)
                             {
                                 upper_level_icache[writeback_cpu]->return_data(&WQ.entry[index]);
+                                data_returned=true;
                             }
                             if (WQ.entry[index].fill_l1d)
                             {
                                 upper_level_dcache[writeback_cpu]->return_data(&WQ.entry[index]);
+                                data_returned=true;
                             }
+#ifdef CT_EXCLUSIVE
+                            if(data_returned) invalidate_entry(&WQ.entry[index].address);
+#endif
                         }
                         else
                         {
-                            if (WQ.entry[index].instruction)
+                            if (WQ.entry[index].instruction){
                                 upper_level_icache[writeback_cpu]->return_data(&WQ.entry[index]);
-                            if (WQ.entry[index].is_data)
+                                data_returned=true;
+                            }
+                            if (WQ.entry[index].is_data){
                                 upper_level_dcache[writeback_cpu]->return_data(&WQ.entry[index]);
+                                data_returned=true;
+                            }
+#ifdef CT_EXCLUSIVE
+                            if(data_returned && fill_level==FILL_LLC) invalidate_entry(&WQ.entry[index].address);
+#endif
                         }
                     }
 
@@ -745,23 +804,40 @@ void CACHE::handle_read()
                 if (RQ.entry[index].fill_level < fill_level)
                 {
 
+                    bool data_returned = false;
                     if (fill_level == FILL_L2)
                     {
+                        data_returned=false;
                         if (RQ.entry[index].fill_l1i)
                         {
+                            data_returned = true;
                             upper_level_icache[read_cpu]->return_data(&RQ.entry[index]);
                         }
                         if (RQ.entry[index].fill_l1d)
                         {
+                            data_returned = true;
                             upper_level_dcache[read_cpu]->return_data(&RQ.entry[index]);
                         }
+#ifdef CT_EXCLUSIVE
+                        if(data_returned)
+                            invalidate_entry(RQ.entry[index].address);
+#endif
                     }
                     else
                     {
-                        if (RQ.entry[index].instruction)
+                        data_returned = false;
+                        if (RQ.entry[index].instruction){
                             upper_level_icache[read_cpu]->return_data(&RQ.entry[index]);
-                        if (RQ.entry[index].is_data)
+                            data_returned = true;
+                        }
+                        if (RQ.entry[index].is_data){
                             upper_level_dcache[read_cpu]->return_data(&RQ.entry[index]);
+                            data_returned = true;
+                        }
+#ifdef CT_EXCLUSIVE
+                        if(data_returned && fill_level == FILL_LLC)
+                            invalidate_entry(RQ.entry[index].address);
+#endif
                     }
                 }
 
@@ -1049,23 +1125,40 @@ void CACHE::handle_prefetch()
                 if (PQ.entry[index].fill_level < fill_level)
                 {
 
+                    bool data_returned = false;
                     if (fill_level == FILL_L2)
                     {
+                        data_returned = false;
                         if (PQ.entry[index].fill_l1i)
                         {
+                            data_returned = true;
                             upper_level_icache[prefetch_cpu]->return_data(&PQ.entry[index]);
                         }
                         if (PQ.entry[index].fill_l1d)
                         {
+                            data_returned = true;
                             upper_level_dcache[prefetch_cpu]->return_data(&PQ.entry[index]);
                         }
+#ifdef CT_EXCLUSIVE
+                        if(data_returned)
+                            invalidate_entry(PQ.entry[index].address);
+#endif
                     }
                     else
                     {
-                        if (PQ.entry[index].instruction)
+                        data_returned = false;
+                        if (PQ.entry[index].instruction){
                             upper_level_icache[prefetch_cpu]->return_data(&PQ.entry[index]);
-                        if (PQ.entry[index].is_data)
+                            data_returned = true;
+                        }
+                        if (PQ.entry[index].is_data){
                             upper_level_dcache[prefetch_cpu]->return_data(&PQ.entry[index]);
+                            data_returned = true;
+                        }
+#ifdef CT_EXCLUSIVE
+                        if(data_returned && fill_level==FILL_LLC)
+                            invalidate_entry(PQ.entry[index].address);
+#endif
                     }
                 }
 
@@ -1403,6 +1496,7 @@ int CACHE::add_rq(PACKET *packet)
     {
 
         // check fill level
+        bool data_returned=false;
         if (packet->fill_level < fill_level)
         {
 
@@ -1410,21 +1504,37 @@ int CACHE::add_rq(PACKET *packet)
 
             if (fill_level == FILL_L2)
             {
+                data_returned = false;
                 if (packet->fill_l1i)
                 {
                     upper_level_icache[packet->cpu]->return_data(packet);
+                    data_returned=true;
                 }
                 if (packet->fill_l1d)
                 {
                     upper_level_dcache[packet->cpu]->return_data(packet);
+                    data_returned=true;
                 }
+#ifdef CT_EXCLUSIVE
+                if(data_returned)
+                    invalidate_entry(packet->address);
+#endif
             }
             else
             {
-                if (packet->instruction)
+                data_returned=false;
+                if (packet->instruction){
+                    data_returned=true;
                     upper_level_icache[packet->cpu]->return_data(packet);
-                if (packet->is_data)
+                }
+                if (packet->is_data){
+                    data_returned=true;
                     upper_level_dcache[packet->cpu]->return_data(packet);
+                }
+#ifdef CT_EXCLUSIVE
+                if(data_returned && fill_level==FILL_LLC)
+                    invalidate_entry(packet->address);
+#endif
             }
         }
 
@@ -1718,23 +1828,40 @@ int CACHE::add_pq(PACKET *packet)
 
             packet->data = WQ.entry[wq_index].data;
 
+            bool data_returned=false;
             if (fill_level == FILL_L2)
             {
+                data_returned=false;
                 if (packet->fill_l1i)
                 {
+                    data_returned=true;
                     upper_level_icache[packet->cpu]->return_data(packet);
                 }
                 if (packet->fill_l1d)
                 {
+                    data_returned=true;
                     upper_level_dcache[packet->cpu]->return_data(packet);
                 }
+#ifdef CT_EXCLUSIVE
+                if(data_returned)
+                    invalidate_entry(packet->address);
+#endif
             }
             else
             {
-                if (packet->instruction)
+                data_returned=false;
+                if (packet->instruction){
                     upper_level_icache[packet->cpu]->return_data(packet);
-                if (packet->is_data)
+                    data_returned=true;
+                }
+                if (packet->is_data){
                     upper_level_dcache[packet->cpu]->return_data(packet);
+                    data_returned=true;
+                }
+#ifdef CT_EXCLUSIVE
+                if(data_returned && fill_level == FILL_LLC)
+                    invalidate_entry(packet->address);
+#endif
             }
         }
 
