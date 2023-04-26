@@ -218,6 +218,7 @@ void CACHE::handle_fill()
                     writeback_packet.event_cycle = current_core_cycle[fill_cpu];
 
                     lower_level->add_wq(&writeback_packet);
+                    invalidate_entry(writeback_packet.address);
                 }
             }
 #ifdef SANITY_CHECK
