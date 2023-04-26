@@ -24,7 +24,7 @@ uint64_t *CACHE::remove_from_upper(PACKET *rem_pack)
     if (upper_level_dcache[rem_pack->cpu] && upper_level_icache[rem_pack->cpu])
     {
         rem_pack->fill_level = rem_pack->fill_level >> 1;
-        u_int64_t *is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
+        uint64_t *is_dirty = upper_level_dcache[rem_pack->cpu]->remove_from_upper(rem_pack);
         if(is_dirty)
         {
             block[set][way].data = *is_dirty;
@@ -147,7 +147,7 @@ void CACHE::handle_fill()
             rem_pack.type = WRITEBACK;
             rem_pack.event_cycle = current_core_cycle[fill_cpu];
 
-            u_int64_t *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack);
+            uint64_t *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack);
             if (is_dirty)
             {
                 block[set][way].data = *is_dirty;
