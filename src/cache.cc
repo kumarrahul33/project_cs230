@@ -12,10 +12,14 @@ uint64_t l2pf_access = 0;
 
 // ************************************************************INCLUSIVE********************************************
 
-u_int64_t *CACHE::remove_from_upper(PACKET *rem_pack)
+uint64_t *CACHE::remove_from_upper(PACKET *rem_pack)
 {
     uint32_t set = get_set(rem_pack->address);
     int way = check_hit(rem_pack);
+    if(way == -1)
+    {
+        return nullptr;
+    }
 
     if (upper_level_dcache[rem_pack->cpu] && upper_level_icache[rem_pack->cpu])
     {
@@ -144,6 +148,12 @@ void CACHE::handle_fill()
             rem_pack.event_cycle = current_core_cycle[fill_cpu];
 
             u_int64_t *is_dirty = upper_level_dcache[fill_cpu]->remove_from_upper(&rem_pack);
+            if (is_dirty)
+            {
+                block[set][way].data = *is_dirty;
+                block[set][way].dirty = 1;
+            }
+            is_dirty = upper_level_icache[fill_cpu]->remove_from_upper(&rem_pack);
             if (is_dirty)
             {
                 block[set][way].data = *is_dirty;

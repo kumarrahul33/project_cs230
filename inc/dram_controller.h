@@ -104,7 +104,7 @@ class MEMORY_CONTROLLER : public MEMORY {
 
     //*************************INCLUSIVE******************************************
         
-    u_int64_t* remove_from_upper(PACKET* rem_pack);
+    uint64_t* remove_from_upper(PACKET* rem_pack);
     //*************************INCLUSIVE******************************************
 
     int check_dram_queue(PACKET_QUEUE *queue, PACKET *packet);
