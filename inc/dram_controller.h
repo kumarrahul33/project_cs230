@@ -104,7 +104,7 @@ class MEMORY_CONTROLLER : public MEMORY {
 
     //*************************INCLUSIVE******************************************
         
-    PACKET* remove_from_upper(PACKET* rem_pack, int up_lvl, uint32_t fill_cpu, uint32_t mshr_index);
+    PACKET* remove_from_upper(PACKET* rem_pack);
     // PACKET* remove_from_upper(PACKET* rem_pack, int up_lvl);
 
     //*************************INCLUSIVE******************************************

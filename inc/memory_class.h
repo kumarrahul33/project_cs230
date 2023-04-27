@@ -35,7 +35,7 @@ class MEMORY {
 
     // ************************************************************INCLUSIVE********************************************
     
-    virtual PACKET* remove_from_upper(PACKET* packet, int up_lvl, uint32_t fill_cpu, uint32_t mshr_index) = 0;
+    virtual PACKET* remove_from_upper(PACKET* packet) = 0;
     // virtual PACKET* remove_from_upper(PACKET* packet, int up_lvl) = 0;
     
     // ************************************************************INCLUSIVE********************************************

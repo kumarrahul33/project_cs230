@@ -1,0 +1,18 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 5000000
+Simulation Instructions: 10000000
+Number of CPUs: 1
+LLC sets: 2048
+LLC ways: 16
+Off-chip DRAM Size: 4096 MB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+
+CPU 0 runs /home/kanad/CS230/Project/project_cs232/dpc3_traces/cc-5.trace.gz
+CPU 0 Bimodal branch predictor
+LLC Next Line Prefetcher
+
+Warmup complete CPU 0 instructions: 5000004 cycles: 1638758 (Simulation time: 0 hr 0 min 10 sec) 
+
+Heartbeat CPU 0 instructions: 10000001 cycles: 26159535 heartbeat IPC: 0.38227 cumulative IPC: 0.203909 (Simulation time: 0 hr 0 min 32 sec) 
+Caught signal: 2
