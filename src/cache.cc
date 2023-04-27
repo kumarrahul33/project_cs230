@@ -2,9 +2,9 @@
 #include "set.h"
 
 // Additional configuration directives
-#define CT_INCLUSIVE
+// #define CT_INCLUSIVE
 // #define CT_EXCLUSIVE
-// #define CT_NONINCLUSIVE
+#define CT_NONINCLUSIVE
 
 uint64_t l2pf_access = 0;
 

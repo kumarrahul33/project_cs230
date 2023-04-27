@@ -13,8 +13,8 @@ DEFAULTS = {
     'L2C_SET': 1024,
     'LLC_SET': 2048 
 }
-BUILD_COMMAND = './build_champsim.sh bimodal no no no next_line lfu 1'
-BASE_COMMAND = './run_champsim.sh bimodal-no-no-no-next_line-lfu-1core 30 60 '
+BUILD_COMMAND = './build_champsim.sh bimodal no no no next_line lru 1'
+BASE_COMMAND = './run_champsim.sh bimodal-no-no-no-next_line-lru-1core 30 60 '
 
 def set_way(way_l1, way_l2, way_llc):
     pattern_l1 = re.compile(f'#define L1D_WAY [0-9]*')
@@ -75,25 +75,25 @@ def run_tests_for_ways():
 
         save_results(set_l1, 'l1')
     
-    for set_l2 in to_test:
-        # set_way(DEFAULTS['L1D_WAY'], way_l2, DEFAULTS['LLC_WAY'])
-        set_sets(DEFAULTS['L1D_SET'], int(set_l2*DEFAULTS['L2C_SET']), DEFAULTS['LLC_SET'])
-        subprocess.run(BUILD_COMMAND,shell=True)
-        for trace in trace_files:
-            curr_command = BASE_COMMAND + trace
-            subprocess.run(curr_command, shell=True)
+    # for set_l2 in to_test:
+    #     # set_way(DEFAULTS['L1D_WAY'], way_l2, DEFAULTS['LLC_WAY'])
+    #     set_sets(DEFAULTS['L1D_SET'], int(set_l2*DEFAULTS['L2C_SET']), DEFAULTS['LLC_SET'])
+    #     subprocess.run(BUILD_COMMAND,shell=True)
+    #     for trace in trace_files:
+    #         curr_command = BASE_COMMAND + trace
+    #         subprocess.run(curr_command, shell=True)
 
-        save_results(set_l2, 'l2')
+    #     save_results(set_l2, 'l2')
 
-    for set_llc in to_test:
-        # set_way(DEFAULTS['L1D_WAY'], DEFAULTS['L2C_WAY'], way_llc)
-        set_sets(DEFAULTS['L1D_SET'], DEFAULTS['L2C_SET'], int(set_llc*DEFAULTS['LLC_SET']))
-        subprocess.run(BUILD_COMMAND,shell=True)
-        for trace in trace_files:
-            curr_command = BASE_COMMAND + trace
-            subprocess.run(curr_command, shell=True)
+    # for set_llc in to_test:
+    #     # set_way(DEFAULTS['L1D_WAY'], DEFAULTS['L2C_WAY'], way_llc)
+    #     set_sets(DEFAULTS['L1D_SET'], DEFAULTS['L2C_SET'], int(set_llc*DEFAULTS['LLC_SET']))
+    #     subprocess.run(BUILD_COMMAND,shell=True)
+    #     for trace in trace_files:
+    #         curr_command = BASE_COMMAND + trace
+    #         subprocess.run(curr_command, shell=True)
 
-        save_results(set_llc, 'llc')
+    #     save_results(set_llc, 'llc')
 
 
 def save_results(way, cache):
@@ -102,10 +102,11 @@ def save_results(way, cache):
         os.makedirs('results')
     # if directory for the cache_way does not exist, create it
     if not os.path.exists('results/{0}_{1}'.format(cache, way)):
-        os.makedirs('results/{0}_{1}'.format(cache, way))
+        os.makedirs('results/with_llc_by/{0}_{1}'.format(cache, way))
     
     # move the results to the directory
-    subprocess.run('mv results_60M/*.txt results/{0}_{1}'.format(cache, way), shell=True)
+    # subprocess.run('mv results_60M/*.txt results/{0}_{1}'.format(cache, way), shell=True)
+    subprocess.run('mv results/with_llc_by/*.txt results/{0}_{1}'.format(cache, way), shell=True)
 
 # run_tests_for_ways()
 def set_default():
