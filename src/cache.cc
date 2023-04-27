@@ -180,7 +180,7 @@ void CACHE::handle_fill()
             }
         }
 
-        #endif
+#endif
         // ************************************************************INCLUSIVE*********************************************
 
         // is this dirty?
@@ -642,13 +642,22 @@ void CACHE::handle_writeback()
                             {
                                 upper_level_dcache[writeback_cpu]->return_data(&WQ.entry[index]);
                             }
+#ifdef CT_EXCLUSIVE
+                            if(data_returned) invalidate_entry(WQ.entry[index].address);
+#endif
                         }
                         else
                         {
-                            if (WQ.entry[index].instruction)
+                            data_returned=false;
+                            if (WQ.entry[index].instruction){
                                 upper_level_icache[writeback_cpu]->return_data(&WQ.entry[index]);
                             if (WQ.entry[index].is_data)
                                 upper_level_dcache[writeback_cpu]->return_data(&WQ.entry[index]);
+                                data_returned=true;
+                            }
+#ifdef CT_EXCLUSIVE
+                            if(data_returned && fill_level==FILL_LLC) invalidate_entry(WQ.entry[index].address);
+#endif
                         }
                     }
 

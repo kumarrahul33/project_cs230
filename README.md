@@ -18,6 +18,5 @@ Majority of the project structure is similar to that of ChampSim, with the follo
 Details and more information about using the ChampSim simulator is present in the `README_ChampSim.md` file.
 
 # Project Presentation and Report
-TODO: Add links to the presentation and report here.
-[Project Presentation (Google Slides)]()
-[Project Video (YouTube)]()
+- [Project Presentation (Google Slides)](https://docs.google.com/presentation/d/1KdDs5tPIJus9dI6htR88me-ySZX24gyO3jsOOpupwn0/edit?usp=sharing)
+- [Project Video (YouTube)]()
