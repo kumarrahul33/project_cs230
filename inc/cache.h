@@ -89,6 +89,7 @@ class CACHE : public MEMORY {
     uint32_t MAX_READ, MAX_FILL;
     uint32_t reads_available_this_cycle;
     uint8_t cache_type;
+    uint32_t time_stamp;
 
     // prefetch stats
     uint64_t pf_requested,
@@ -156,6 +157,7 @@ class CACHE : public MEMORY {
         pf_useful = 0;
         pf_useless = 0;
         pf_fill = 0;
+        time_stamp = 0;
     };
 
     // destructor

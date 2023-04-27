@@ -34,6 +34,7 @@ uint64_t *CACHE::remove_from_upper(PACKET *rem_pack)
     
     if (block[set][way].dirty == 1)
     {
+        block[set][way].valid = 0;
         return &((block[set][way].data));
     }
     else
@@ -394,9 +395,9 @@ void CACHE::handle_writeback()
         else
         { // writeback miss (or RFO miss for L1D)
 
-#ifdef CT_INCLUSIVE
-            assert(0);
-#endif
+// #ifdef CT_INCLUSIVE
+//             assert(0);
+// #endif
 
             DP(if (warmup_complete[writeback_cpu]) {
             cout << "[" << NAME << "] " << __func__ << " type: " << +WQ.entry[index].type << " miss";
@@ -1275,10 +1276,14 @@ void CACHE::fill_cache(uint32_t set, uint32_t way, PACKET *packet)
     if (block[set][way].prefetch)
         pf_fill++;
 
+    this->time_stamp++;
     block[set][way].delta = packet->delta;
     block[set][way].depth = packet->depth;
     block[set][way].signature = packet->signature;
     block[set][way].confidence = packet->confidence;
+    //==========================================================//
+    block[set][way].fifo = this->time_stamp;
+    //==========================================================//
 
     block[set][way].tag = packet->address;
     block[set][way].address = packet->address;
