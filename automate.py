@@ -14,7 +14,7 @@ DEFAULTS = {
     'LLC_SET': 2048 
 }
 BUILD_COMMAND = './build_champsim.sh bimodal no no no next_line lfu 1'
-BASE_COMMAND = './run_champsim.sh bimodal-no-no-no-next_line-lfu-1core 30 60 '
+BASE_COMMAND = './run_champsim.sh bimodal-no-no-no-next_line-lfu-1core 10 20 '
 
 def set_way(way_l1, way_l2, way_llc):
     pattern_l1 = re.compile(f'#define L1D_WAY [0-9]*')

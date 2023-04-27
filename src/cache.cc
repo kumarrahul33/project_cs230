@@ -3,8 +3,8 @@
 
 // Additional configuration directives
 // #define CT_INCLUSIVE
-// #define CT_EXCLUSIVE
-#define CT_NONINCLUSIVE
+#define CT_EXCLUSIVE
+//#define CT_NONINCLUSIVE
 
 uint64_t l2pf_access = 0;
 
@@ -693,7 +693,7 @@ void CACHE::handle_writeback()
                                 data_returned=true;
                             }
 #ifdef CT_EXCLUSIVE
-                            if(data_returned) invalidate_entry(&WQ.entry[index].address);
+                            if(data_returned) invalidate_entry(WQ.entry[index].address);
 #endif
                         }
                         else
@@ -707,7 +707,7 @@ void CACHE::handle_writeback()
                                 data_returned=true;
                             }
 #ifdef CT_EXCLUSIVE
-                            if(data_returned && fill_level==FILL_LLC) invalidate_entry(&WQ.entry[index].address);
+                            if(data_returned && fill_level==FILL_LLC) invalidate_entry(WQ.entry[index].address);
 #endif
                         }
                     }
