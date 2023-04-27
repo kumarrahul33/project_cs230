@@ -12,7 +12,7 @@ Through this project, we aim to analyze performance of memory hierarchies with v
 
 # Project Structure
 Majority of the project structure is similar to that of ChampSim, with the following additions:
-- `results`: Contains the simulation results on various memory hierarchies that we have experimented with. Also contains a helper code  that parses the simulation results and plots them on a graph.
+- `results`: Contains the simulation results on various memory hierarchies that we have experimented with. Also contains a helper code  that parses the simulation results and plots them on a graph. The subfolder `bak` contains the results from the previous runs.
 - `automate.py`: A python script that automates the process of running the simulator on various memory hierarchies and generates the results.
 
 Details and more information about using the ChampSim simulator is present in the `README_ChampSim.md` file.
